@@ -1,3 +1,4 @@
+<div>
 <section style="background-color: #eee;">
     {{-- <section style="background-color: #212042;"> --}}
     <div class="container py-5 h-100">
@@ -123,10 +124,10 @@
     </div>
     <!-- Edit Task Model-->
     {{-- @livewire('task-component') --}}
-    <div wire:ignore class="modal fade" id="editTaskModal" data-bs-backdrop="static" data-bs-keyboard="false"
+    <div wire:ignore.self class="modal fade" id="editTaskModal" data-bs-backdrop="static" data-bs-keyboard="false"
         tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form wire:submit>
+            {{--  <form wire:submit>  --}}
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="editTaskModalLabel">
@@ -154,8 +155,6 @@
                                     'class' => '',
                                 ])
                             </div>
-
-
                             <div class="mb-3">
                                 <label for="description" class="col-form-label">{{ __('Description:') }}</label>
                                 @include('components.field', [
@@ -164,20 +163,16 @@
                                     'class' => '',
                                     'value' => '{{ $view_description }}',
                                 ])
-
-                                
                             </div>
                             <div class="mb-3">
                                 <div class="container">
                                     <select class="selectpicker" multiple>
                                         <option selected>Ahmed Amine</option>
-                                        @foreach ($allUsers as $user)
-                                        @if (in_array($user->id,$selectedUsers))
-                                        {{ dd($selectedUsers) }} <option 
-                                        selected
-                                        @endif > {{ $user->name }}  
-                                    </option>
-                                    @endforeach
+                                        @foreach ($allUsers as $tempUser)
+                                            <option @if (in_array($tempUser->id, $selectedUsers)) selected @endif>
+                                                {{ $tempUser->name }}
+                                            </option>
+                                        @endforeach
                                     </select>
 
                                 </div>
@@ -197,10 +192,9 @@
                                     <select class="selectpicker " multiple>
                                         <option selected>Category</option>
                                         @foreach ($allCategories as $category)
-                                            <option value="{{ $category->id }}" 
-                                                @if (in_array($category->id,$selectedCategories))
-                                                selected
-                                                @endif > {{ $category->name }} </option>
+                                            <option value="{{ $category->id }}"
+                                                @if (in_array($category->id, $selectedCategories)) selected @endif>
+                                                {{ $category->name }} </option>
                                         @endforeach
                                     </select>
                                     <select wire:model="selectedCategories" class="selectpicker" multiple
@@ -241,7 +235,7 @@
                         </div>
                     </form>
                 </div>
-            </form>
+            {{--  </form>  --}}
         </div>
     </div>
     <!-- Add Task Model-->
@@ -381,4 +375,11 @@
     <script>
         flatpickr("input[type=datetime-local]");
     </script>
+    <script>
+        window.addEventListener('contentChanged', event => {
+            $('.selectpicker').selectpicker();
+        });
+    </script>
 @endpush
+
+</div>

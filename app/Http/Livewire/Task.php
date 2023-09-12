@@ -14,7 +14,7 @@ class Task extends Component
 
     protected $paginationTheme = 'bootstrap';
     public $SelId, $taskId, $title, $description, $date_due, $priority, $status, $created_by_id, $category_id, $user;
-    public  $allCategories, $allUsers,$users;
+    public $allCategories, $allUsers,$users;
     public $selectedCategories = [];
     public $selectedUsers = [];
     public $taskShow, $view_title, $view_description, $view_date_due, $view_priority, $view_status, $view_selectedCategories, $view_selectedUsers;
@@ -30,10 +30,10 @@ class Task extends Component
 
     public function render()
     {
+        $this->dispatchBrowserEvent('contentChanged');
         // $this->tasks = ModelsTask::with('categories', 'users', 'createdBy')
         // ->withCount('users')->paginate(10);
-        $this->allCategories = Category::all();
-        $this->allUsers = User::all();
+
         return view(
             'livewire.task',
             [
@@ -41,7 +41,8 @@ class Task extends Component
                     ->with('categories', 'users', 'createdBy')
                     ->withCount('users')->paginate(10)
             ]
-        )->layout('layouts.base');
+            )
+        ->layout('layouts.base');
     }
 
     //     $this->tasks = ModelsTask::with('createdBy')->get();
@@ -51,6 +52,8 @@ class Task extends Component
     // }
     public function mount()
     {
+        $this->allCategories = Category::all();
+        $this->allUsers = User::get();
         // $this->allCategories = Category::all();
         // $this->allUsers = User::all();
         // $this->tasks = ModelsTask::with('categories', 'users', 'createdBy')->withCount('users')->get();
@@ -111,7 +114,7 @@ class Task extends Component
     }
     public function markTaskAsCompleted($taskId)
     {
- 
+
         $task = ModelsTask::findOrFail($taskId);
         $status = $task->status;
 
@@ -135,11 +138,10 @@ class Task extends Component
         $this->date_due = $taskShow->date_due;
         $this->priority = $taskShow->priority;
         $this->status = $taskShow->status;
-        $this->selectedUsers =[1,2];
-        // $taskShow->users->pluck('id')->toArray();
+        $this->selectedUsers = $taskShow->users->pluck('id')->toArray();
         $this->selectedCategories = $taskShow->categories->pluck('id')->toArray();
-        
         $this->dispatchBrowserEvent('show-edit-task-modal');
+
     }
     public function deleteTask()
     {
