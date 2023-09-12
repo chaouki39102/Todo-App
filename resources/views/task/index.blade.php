@@ -69,22 +69,23 @@
                                                     </form>
                                                     {{-- Edit Button --}}
                                                     <div>
-                                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal">
+                                                        <button type="button" class="btn btn-primary"
+                                                            data-bs-toggle="modal" data-bs-target="#editTaskModal">
                                                             Edit Task
                                                         </button>
-                                                    <button wire:click="$emit('openEditModal')"
-                                                        class="btn btn-primary">Edit</button>
-                                                    {{-- //<form action="{{ route('task.edit', ['userId' => $user->id, 'taskId' => $task->id]) }} " method="post">
+                                                        <button wire:click="$emit('openEditModal')"
+                                                            class="btn btn-primary">Edit</button>
+                                                        {{-- //<form action="{{ route('task.edit', ['userId' => $user->id, 'taskId' => $task->id]) }} " method="post">
                                                         @csrf
                                                         <button class="btn p-0" type="submit">
                                                             <i class="fas fa-pencil-alt text-primary  me-3"></i>
                                                         </button>
                                                     </form> --}}
-                                                    <button class="btn p-0" type="submit" data-bs-toggle="modal"
-                                                        data-bs-target="#DeleteMsg">
-                                                        <i class="fas fa-trash-alt text-danger"></i>
-                                                    </button>
-                                                </div>
+                                                        <button class="btn p-0" type="submit" data-bs-toggle="modal"
+                                                            data-bs-target="#DeleteMsg">
+                                                            <i class="fas fa-trash-alt text-danger"></i>
+                                                        </button>
+                                                    </div>
 
                                             </td>
                                         </tr>
