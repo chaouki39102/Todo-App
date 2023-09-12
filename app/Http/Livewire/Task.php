@@ -14,7 +14,7 @@ class Task extends Component
 
     protected $paginationTheme = 'bootstrap';
     public $SelId, $taskId, $title, $description, $date_due, $priority, $status, $created_by_id, $category_id, $user;
-    public  $allCategories, $allUsers;
+    public  $allCategories, $allUsers,$users;
     public $selectedCategories = [];
     public $selectedUsers = [];
     public $taskShow, $view_title, $view_description, $view_date_due, $view_priority, $view_status, $view_selectedCategories, $view_selectedUsers;
@@ -51,12 +51,12 @@ class Task extends Component
     // }
     public function mount()
     {
-
         // $this->allCategories = Category::all();
         // $this->allUsers = User::all();
         // $this->tasks = ModelsTask::with('categories', 'users', 'createdBy')->withCount('users')->get();
 
     }
+
 
     public function SelId($id)
     {
@@ -64,26 +64,38 @@ class Task extends Component
     }
     public function storeTask()
     {
-
         $dataValidated = $this->validate($this->rules);
-
         $dataValidated['status'] = 'Not-Started';
         $dataValidated['created_by'] = userId();
-
         $task = ModelsTask::create($dataValidated);
-
         // Attach team members
         $task->users()->attach(userId());
         $task->users()->attach($this->selectedUsers);
         // Attach categories
         $task->categories()->attach($this->selectedCategories);
-
-
-
         $this->resetFields();
-
         session()->flash('success', 'New task has been added successfully');
         $this->dispatchBrowserEvent('close-modal');
+    }
+    public function updateTask()
+    {
+
+        $task = ModelsTask::where('title', 'like', '%' . $this->task->id . '%')
+        ->with('categories', 'users', 'createdBy');
+        $this->users = $task->users;
+
+        // $dataValidated = $this->validate($this->rules);
+        // $dataValidated['status'] = 'Not-Started';
+        // $dataValidated['created_by'] = userId();
+        // $task = ModelsTask::create($dataValidated);
+        // // Attach team members
+        // $task->users()->attach(userId());
+        // $task->users()->attach($this->selectedUsers);
+        // // Attach categories
+        // $task->categories()->attach($this->selectedCategories);
+        // $this->resetFields();
+        // session()->flash('success', 'New task has been added successfully');
+        // $this->dispatchBrowserEvent('close-modal');
     }
 
     public function resetFields()
@@ -95,14 +107,12 @@ class Task extends Component
         $this->priority = '';
         $this->status = '';
         $this->selectedCategories = [];
-        $this->selectedUsers = [];
+        // $this->selectedUsers = [];
     }
     public function markTaskAsCompleted($taskId)
     {
-        // $task = ModelsTask::findOrFail($taskId);
-        // if (isset($taskId)) {
+ 
         $task = ModelsTask::findOrFail($taskId);
-        // dd($task);
         $status = $task->status;
 
         if ($status = 'Completed') {
@@ -110,9 +120,7 @@ class Task extends Component
                 'status' => 'Not-Started',
             ]);
         }
-        // } else {
-        //     session()->flash('warning', 'The task not found!');
-        // }
+
     }
     public function editTask()
     {
@@ -120,14 +128,18 @@ class Task extends Component
     }
     public function showTask($taskId)
     {
-        $taskShow = ModelsTask::findOrFail($taskId);
-        $this->view_title = $taskShow->title;
-        $this->view_description = $taskShow->vescription;
-        $this->view_date_due = $taskShow->date_due;
-        $this->view_priority = $taskShow->priority;
-        $this->view_status = $taskShow->status;
-        $this->view_selectedCategories = $taskShow->selectedCategories;
-        $this->view_selectedUsers = $taskShow->selectedUsers;
+        $taskShow = ModelsTask::find($taskId);
+        $this->taskId = $taskShow->id;
+        $this->title = $taskShow->title;
+        $this->description = $taskShow->description;
+        $this->date_due = $taskShow->date_due;
+        $this->priority = $taskShow->priority;
+        $this->status = $taskShow->status;
+        $this->selectedUsers =[1,2];
+        // $taskShow->users->pluck('id')->toArray();
+        $this->selectedCategories = $taskShow->categories->pluck('id')->toArray();
+        
+        $this->dispatchBrowserEvent('show-edit-task-modal');
     }
     public function deleteTask()
     {
@@ -135,21 +147,6 @@ class Task extends Component
         $task->delete();
         $this->dispatchBrowserEvent('close-modal');
     }
-    // protected $listeners = ['openEditModal' => 'openEditModal'];
-
-    // public function openEditModal($taskId)
-    // {
-    //     $this->task = Task::findOrFail($taskId);
-    //     $this->taskId = $taskId;
-    // $this->dispatchBrowserEvent('open-edit-modal');
-    // }
-
-    // public function updateTask()
-    // {
-    //     $this->task->save();
-    //     $this->emit('taskUpdated');
-    //     $this->dispatchBrowserEvent('close-edit-modal');
-    // }
 
 
 }

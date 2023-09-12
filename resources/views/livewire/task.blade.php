@@ -39,7 +39,6 @@
                                                 @foreach ($task->users as $user)
                                                     @if ($task->created_by == $user->id)
                                                         <p class="d-inline-flex m-auto">
-
                                                             <a class="btn btn-light" data-bs-toggle="collapse"
                                                                 href="#collapseExample_{{ $task->id }}"
                                                                 role="button" aria-expanded="false"
@@ -93,7 +92,7 @@
                                                         <i class="fas fa-check text-success "></i>
                                                     </button>
                                                     <button class="btn p-15"
-                                                        wire:click="editTask({{ $task->id }})">
+                                                        wire:click="showTask({{ $task->id }})">
                                                         <i class="fas fa-pencil-alt text-primary "></i>
                                                     </button>
                                                     <button wire:ignore class="btn p-15" data-bs-toggle="modal"
@@ -122,6 +121,129 @@
             </div>
         </div>
     </div>
+    <!-- Edit Task Model-->
+    {{-- @livewire('task-component') --}}
+    <div wire:ignore class="modal fade" id="editTaskModal" data-bs-backdrop="static" data-bs-keyboard="false"
+        tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form wire:submit>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editTaskModalLabel">
+                            {{ __('Update a new task') }}
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form wire:submit.prevent="updateTask">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="id" class="col-form-label">{{ __('Task id:') }}</label>
+                                @include('components.field', [
+                                    'type' => 'text',
+                                    'name' => 'taskId',
+                                    'placeholder' => '',
+                                    'class' => '',
+                                ])
+                            </div>
+                            <div class="mb-3">
+                                <label for="title" class="col-form-label">{{ __('Task title:') }}</label>
+                                @include('components.field', [
+                                    'type' => 'text',
+                                    'name' => 'title',
+                                    'placeholder' => 'Write your task title here',
+                                    'class' => '',
+                                ])
+                            </div>
+
+
+                            <div class="mb-3">
+                                <label for="description" class="col-form-label">{{ __('Description:') }}</label>
+                                @include('components.field', [
+                                    'type' => 'textarea',
+                                    'name' => 'description',
+                                    'class' => '',
+                                    'value' => '{{ $view_description }}',
+                                ])
+
+                                
+                            </div>
+                            <div class="mb-3">
+                                <div class="container">
+                                    <select class="selectpicker" multiple>
+                                        <option selected>Ahmed Amine</option>
+                                        @foreach ($allUsers as $user)
+                                        @if (in_array($user->id,$selectedUsers))
+                                        {{ dd($selectedUsers) }} <option 
+                                        selected
+                                        @endif > {{ $user->name }}  
+                                    </option>
+                                    @endforeach
+                                    </select>
+
+                                </div>
+                                <div class="container px-0">
+                                    <label for="users"
+                                        class="col-form-label">{{ __('Select collaborators:') }}</label>
+                                    <select wire:model="selectedUsers" class="selectpicker " multiple>
+                                        @foreach ($allUsers as $user)
+                                            <option value="{{ $user->id }}" selected>{{ $user->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="container px-0">
+                                    <label for="categories"
+                                        class="col-form-label">{{ __('Select categories:') }}</label>
+                                    <select class="selectpicker " multiple>
+                                        <option selected>Category</option>
+                                        @foreach ($allCategories as $category)
+                                            <option value="{{ $category->id }}" 
+                                                @if (in_array($category->id,$selectedCategories))
+                                                selected
+                                                @endif > {{ $category->name }} </option>
+                                        @endforeach
+                                    </select>
+                                    <select wire:model="selectedCategories" class="selectpicker" multiple
+                                        aria-label="size 3 select example">
+                                        @foreach ($allCategories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between gap-2 ">
+                                <div class="w-50">
+                                    <label for="priority" class="col-form-label">{{ __('Priority:') }}</label>
+                                    @include('components.field', [
+                                        'class' => '',
+                                        'type' => 'select',
+                                        'name' => 'priority',
+                                        'options' => [
+                                            'High' => __('High'),
+                                            'Medium' => __('Medium'),
+                                            'Low' => __('Low'),
+                                        ],
+                                        'placeholder' => __('Priority'),
+                                    ])
+                                </div>
+                                <div>
+                                    <label for="date_due" class="col-form-label">{{ __('Date:') }}</label>
+                                    <input wire:model="date_due" type="datetime-local" class="form-control "
+                                        name="date_due" id="date_due">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-success">{{ __('Update Task') }}</button>
+                        </div>
+                    </form>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Add Task Model-->
     <div wire:ignore class="modal fade" id="addTaskModel" data-bs-backdrop="static" data-bs-keyboard="false"
         tabindex="-1" aria-labelledby="addTaskModelLabel" aria-hidden="true">
@@ -130,7 +252,8 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="addTaskModelLabel">{{ __('Add a new task') }}</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
@@ -156,7 +279,8 @@
                         </div>
                         <div class="mb-3">
                             <div class="container px-0">
-                                <label for="users" class="col-form-label">{{ __('Select collaborators:') }}</label>
+                                <label for="users"
+                                    class="col-form-label">{{ __('Select collaborators:') }}</label>
                                 <select wire:model="selectedUsers" class="selectpicker " multiple
                                     aria-label="size 5 select example">
                                     @foreach ($allUsers as $user)
@@ -218,19 +342,15 @@
 
 </section>
 
-{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta2/js/bootstrap-select.min.js"
-    integrity="sha512-FHZVRMUW9FsXobt+ONiix6Z0tIkxvQfxtCSirkKc5Sb4TKHmqq1dZa8DphF0XqKb3ldLu/wgMa8mT6uXiLlRlw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script> --}}
+
 
 
 <script script type="text/javascript">
     $(function() {
         $('.date_due').datetimepicker();
+    });
+    window.addEventListener('show-edit-task-modal', event => {
+        $('#editTaskModal').modal('show');
     });
 </script>
 @push('scripts')
@@ -245,8 +365,8 @@
             ///$('#deleteStudentModal').modal('hide');
         });
 
-        window.addEventListener('show-edit-student-modal', event => {
-            $('#editStudentModal').modal('show');
+        window.addEventListener('show-edit-task-modal', event => {
+            $('#editTaskModal').modal('show');
         });
 
         window.addEventListener('show-delete-confirmation-modal', event => {
