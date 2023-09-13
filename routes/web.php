@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TaskController;
 use App\Http\Livewire\Task;
 use App\Http\Livewire\TaskComponent;
 use Illuminate\Support\Facades\Route;
@@ -15,15 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return redirect('/task');
-// });
-// Route::get('files', [GetFileController::class,'index'])->name('get-file');
 
+Route::view('/', 'welcome');
 
-// Route::middleware('auth')->resource('task',TaskController::class );
+Route::middleware('auth')->group(function () {
+Route::get('task',[ TaskController::class , 'index'])->name('task');
+});
 
-Route::middleware('auth')->get('task',Task::class)->name('task');
 include ('auth.php');
-
-// Route::get('students', StudentsComponent::class);
