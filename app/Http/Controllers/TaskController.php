@@ -16,8 +16,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::with('users')->get();
-        return view('task', compact('tasks'));
+        return view('task.index');
         //
     }
 
