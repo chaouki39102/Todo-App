@@ -24,7 +24,7 @@
                                 <table class="table  mb-0">
                                     <thead>
                                         <tr>
-                                            <th scope="col">{{ __('Team Member') }}</th>
+                                            <th scope="col">{{ __('Team Member1') }}</th>
                                             <th scope="col">{{ __('Task') }}</th>
                                             <th scope="col">{{ __('Date Due') }}</th>
                                             <th scope="col">{{ __('Progress') }}</th>
@@ -134,7 +134,7 @@
                         <h1 class="modal-title fs-5" id="editTaskModalLabel">
                             {{ __('Update a new task') }}
                         </h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button wire:click="resetFields()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form wire:submit.prevent="updateTask">
                         <div class="modal-body">
@@ -212,7 +212,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button wire:click="resetFields()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-success">{{ __('Update Task') }}</button>
                         </div>
                     </form>
