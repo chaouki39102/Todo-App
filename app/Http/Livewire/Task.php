@@ -31,13 +31,12 @@ class Task extends Component
     public function render()
     {
         $this->dispatchBrowserEvent('contentChanged');
-
         return view(
             'livewire.task',
             [
                 'tasks' => ModelsTask::where('title', 'like', '%' . $this->search . '%')
                     ->with('categories', 'users', 'createdBy')
-                    ->withCount('users')->paginate(10)
+                    ->withCount('users')->paginate(5)
             ]
         );
     }
@@ -123,14 +122,15 @@ class Task extends Component
     }
 
     public $selectedIdForDelete;
-    public function selcForDelete($id){
-        $this->selectedIdForDelete = $id ;
+    public function selcForDelete($id)
+    {
+        $this->selectedIdForDelete = $id;
     }
     public function deleteTask()
     {
         ModelsTask::where('created_by', authUser()->id)
-        ->findOrFail((int) $this->selectedIdForDelete)
-        ->delete();
+            ->findOrFail((int) $this->selectedIdForDelete)
+            ->delete();
         $this->dispatchBrowserEvent('close-modal');
     }
 }

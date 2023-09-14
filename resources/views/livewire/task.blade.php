@@ -320,7 +320,7 @@
                 Are you sure ? this delete will be permanent !
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button wire:click="resetFields()"type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button wire:click="deleteTask()" type="button" data-bs-dismiss="modal" class="btn btn-danger">{{ __('Delete') }}</button>
             </div>
         </div>
