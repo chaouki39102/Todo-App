@@ -7,10 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class GetFileController extends Controller
 {
-    // function index(Request $request)
-    // {
-    //     return Storage::url($request->query('path'));
-    // }
+
     function index(Request $request)
     {
         $path =$request->query('path');

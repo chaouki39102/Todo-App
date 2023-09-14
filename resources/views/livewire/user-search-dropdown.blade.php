@@ -7,7 +7,7 @@
     </select>
     <input type="text" wire:model="search" class="form-control mt-2" placeholder="Search users">
     <div class="mt-2">
-        Selected Users: 
+        Selected Users:
         @foreach ($selectedUsers as $selectedUser)
             {{ $selectedUser['name'] }}{{ !$loop->last ? ', ' : '' }}
         @endforeach
