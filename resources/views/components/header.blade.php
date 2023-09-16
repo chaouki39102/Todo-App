@@ -1,6 +1,6 @@
     <!-- ====== Header Start ====== -->
     @if (authUser())
-        <header class="ud-header sticky">
+        <header class="bg-body-tertiary fixed-top shadow-sm">
             <div class="align-items-xl-center card-footer d-flex justify-content-end p-3 text-end">
                 <img class="nav-avatar rounded-circle " src="{{getFile(auth()->user()->avatar)}}" alt="" style="width: 42px;">
                 

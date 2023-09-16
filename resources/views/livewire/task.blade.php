@@ -51,18 +51,11 @@
                                                     @foreach ($task->users as $user)
                                                         <div class="collapse "
                                                             id="collapse_collabs_{{ $task->id }}">
-
                                                             <ol class="list-group list-group-numbered">
                                                                 <li class="list-group-item">{{ $user->name }}</li>
                                                             </ol>
-
-
-
                                                         </div>
                                                     @endforeach
-
-
-
                                                 </td>
                                                 <td class="align-middle w-25">
                                                     <span wire:click="showTask({{ $task->id }})" type="button"
@@ -88,7 +81,9 @@
                                                         <button wire:click="markTaskAsCompleted({{ $task->id }})"
                                                             class="btn p-15" type="submit">
                                                             @if ($task->status === 'Not-Started')
-                                                                <i class="fas fa-power-off text-danger"></i>
+                                                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                                                            <i class="fa-solid fa-right-to-bracket"></i>
+                                                                <i class="fas fa-arrow-right-to-bracket text-danger"></i>
                                                             @elseif($task->status === 'In-progress')
                                                                 <i class="fas fa-power-off text-success"></i>
                                                             @elseif($task->status === 'Completed')
