@@ -19,6 +19,7 @@ class Task extends Component
     public $selectedUsers = [];
     public $taskShow, $view_title, $view_description, $view_date_due, $view_priority, $view_status, $view_selectedCategories, $view_selectedUsers;
     public $search = '';
+    public  $taskCollapseStates = [];
 
     protected $rules = [
         'title' => 'required|string|min:2|max:100',
@@ -36,17 +37,21 @@ class Task extends Component
             [
                 'tasks' => ModelsTask::where('title', 'like', '%' . $this->search . '%')
                     ->with('categories', 'users', 'createdBy')
-                    ->withCount('users')->paginate(5)
+                    ->withCount('users')->paginate(10)
             ]
         );
     }
+
     public function mount()
     {
         $this->allCategories = Category::all();
         $this->allUsers = User::get();
     }
 
-
+    public function toggleCollapse($taskId)
+    {
+        $this->taskCollapseStates[$taskId] = !$this->taskCollapseStates[$taskId];
+    }
     public function SelId($id)
     {
         $this->SelId = $id;
@@ -58,7 +63,6 @@ class Task extends Component
         $dataValidated['created_by'] = userId();
         $task = ModelsTask::create($dataValidated);
         // Attach team members
-        $task->users()->attach(userId());
         $task->users()->attach($this->selectedUsers);
         // Attach categories
         $task->categories()->attach($this->selectedCategories);
@@ -68,10 +72,14 @@ class Task extends Component
     }
     public function updateTask()
     {
+        $dataValidated = $this->validate($this->rules);
 
-        $task = ModelsTask::where('title', 'like', '%' . $this->task->id . '%')
-            ->with('categories', 'users', 'createdBy');
-        $this->users = $task->users;
+        $task = ModelsTask::findOrFail($this->taskId);
+        // $user = User::findOrFail();
+        $task->users()->sync($this->selectedUsers);
+        $task->categories()->sync($this->selectedCategories);
+        $task->update($dataValidated);
+        $this->dispatchBrowserEvent('close-modal');
     }
 
     public function resetFields()

@@ -36,33 +36,32 @@
                                         @foreach ($tasks as $task)
                                             <tr class="fw-normal">
                                                 <td>
-                                                    @foreach ($task->users as $user)
-                                                        @if ($task->created_by == $user->id)
-                                                            <p class="d-inline-flex m-auto">
-                                                                <a class="btn btn-light" data-bs-toggle="collapse"
-                                                                    href="#collapseExample_{{ $task->id }}"
-                                                                    role="button" aria-expanded="false"
-                                                                    aria-controls="collapseExample">
-                                                                    <span class="badge Completed">Owner
-                                                                    </span>
-                                                                    {{ $user->name }}
-                                                                    @if ($task->users_count - 1 != 0)
-                                                                        <span
-                                                                            class="badge Completed">{{ $task->users_count - 1 }}</span>
-                                                                    @endif
-                                                                </a>
-
-                                                            </p>
-                                                        @else
-                                                            <div class="collapse "
-                                                                id="collapseExample_{{ $task->id }}">
-                                                                <div
-                                                                    class=" d-flex justify-content-between align-items-center">
-                                                                    {{ $user->name }}
-                                                                </div>
-                                                            </div>
+                                                    <a class="btn btn-light collapsed" data-bs-toggle="collapse"
+                                                        href="#collapse_collabs_{{ $task->id }}" role="button"
+                                                        aria-expanded="false" aria-controls="collapseExample">
+                                                        <span class="badge Completed">Owner
+                                                        </span>
+                                                        {{ $task->createdBy->name }}
+                                                        @if ($task->users_count != 0)
+                                                            <span
+                                                                class="badge Completed">{{ $task->users_count }}</span>
                                                         @endif
+                                                    </a>
+
+                                                    @foreach ($task->users as $user)
+                                                        <div class="collapse "
+                                                            id="collapse_collabs_{{ $task->id }}">
+
+                                                            <ol class="list-group list-group-numbered">
+                                                                <li class="list-group-item">{{ $user->name }}</li>
+                                                            </ol>
+
+
+
+                                                        </div>
                                                     @endforeach
+
+
 
                                                 </td>
                                                 <td class="align-middle w-25">
@@ -88,31 +87,45 @@
                                                     <div class="d-flex">
                                                         <button wire:click="markTaskAsCompleted({{ $task->id }})"
                                                             class="btn p-15" type="submit">
-                                                            @if($task->status === 'Not-Started')
-                                                            <i class="fas fa-power-off text-danger"></i>
+                                                            @if ($task->status === 'Not-Started')
+                                                                <i class="fas fa-power-off text-danger"></i>
                                                             @elseif($task->status === 'In-progress')
-                                                            <i class="fas fa-power-off text-success"></i>
+                                                                <i class="fas fa-power-off text-success"></i>
                                                             @elseif($task->status === 'Completed')
-                                                            <i class="fas fa-check text-success"></i>
+                                                                <i class="fas fa-check text-success"></i>
                                                             @endif
                                                         </button>
                                                         <button class="btn p-15"
                                                             wire:click="showTask({{ $task->id }})">
                                                             <i class="fas fa-pencil-alt text-primary "></i>
                                                         </button>
-                                                        <button wire:click="selcForDelete({{ $task->id }})" class="btn p-15" onclick="$('#deleteStudentModal').modal('show')">
+                                                        <button wire:click="selcForDelete({{ $task->id }})"
+                                                            class="btn p-15"
+                                                            onclick="$('#deleteStudentModal').modal('show')">
                                                             <i class="fas fa-trash-alt text-danger"></i>
                                                         </button>
                                                     </div>
 
                                                 </td>
                                             </tr>
+                                            @push('scripts')
+                                                <script>
+                                                    document.addEventListener('livewire:load', function() {
+                                                        // Your jQuery code here
+                                                        $(document).ready(function() {
+                                                            // This code will run after Livewire component is rendered
+                                                            // You can perform your jQuery operations here
+                                                            $(".collapse").collapse('hide');
+                                                        });
+                                                    });
+                                                </script>
+                                            @endpush
                                         @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         @else
-                            <div class="alert alert-warning text-center">{{ __('No task added yet!') }} </div>
+                            <div class="alert alert-warning text-center">{{ __('No task found!') }} </div>
                         @endif
                         <div class="card-footer text-end d-flex justify-content-between  p-3">
                             {{ $tasks->links() }}
@@ -134,7 +147,8 @@
                         <h1 class="modal-title fs-5" id="editTaskModalLabel">
                             {{ __('Update a new task') }}
                         </h1>
-                        <button wire:click="resetFields()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button wire:click="resetFields()" type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <form wire:submit.prevent="updateTask">
                         <div class="modal-body">
@@ -162,7 +176,7 @@
                                     'type' => 'textarea',
                                     'name' => 'description',
                                     'class' => '',
-                                    'value' => '{{ $view_description }}',
+                                    'value' => '',
                                 ])
                             </div>
                             <div class="mb-3">
@@ -171,14 +185,16 @@
                                         class="col-form-label">{{ __('Select collaborators:') }}</label>
                                     <select wire:model="selectedUsers" class="selectpicker " multiple>
                                         @foreach ($allUsers as $user)
-                                            <option value="{{ $user->id }}" selected>{{ $user->name }}</option>
+                                            @if ($user->id != userId())
+                                                <option value="{{ $user->id }}" selected>{{ $user->name }} </option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="container px-0">
                                     <label for="categories"
                                         class="col-form-label">{{ __('Select categories:') }}</label>
-                                    <select class="selectpicker" wire:model="selectedCategories"  multiple>
+                                    <select class="selectpicker" wire:model="selectedCategories" multiple>
                                         <option selected>Category</option>
                                         @foreach ($allCategories as $category)
                                             <option value="{{ $category->id }}"
@@ -205,14 +221,15 @@
                                 </div>
                                 <div>
                                     <label for="date_due" class="col-form-label">{{ __('Date:') }}</label>
-                                    <input wire:model="date_due" type="datetime-local" class="form-control "
-                                        name="date_due" id="date_due">
+                                    <input wire:ignore wire:model="date_due" type="datetime-local"
+                                        class="form-control " name="date_due" id="date_due">
                                 </div>
                             </div>
 
                         </div>
                         <div class="modal-footer">
-                            <button wire:click="resetFields()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button wire:click="resetFields()" type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-success">{{ __('Update Task') }}</button>
                         </div>
                     </form>
@@ -257,8 +274,10 @@
                                     <select wire:model="selectedUsers" class="selectpicker " multiple
                                         aria-label="size 5 select example">
                                         @foreach ($allUsers as $user)
-                                            <option value="{{ $user->id }}">{{ $user->name }}
-                                            </option>
+                                            @if ($user->id != userId())
+                                                <option value="{{ $user->id }}">{{ $user->name }}
+                                                </option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div>
@@ -306,32 +325,37 @@
             </div>
         </div>
     </section>
-    <div wire:ignore.self class="modal fade" id="deleteStudentModal" data-bs-backdrop="static" data-bs-keyboard="false"
-    tabindex="-1" aria-labelledby="deleteStudentModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteStudentModal">
-                    {{ __('Update a new task') }}
-                </h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure ? this delete will be permanent !
-            </div>
-            <div class="modal-footer">
-                <button wire:click="resetFields()"type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button wire:click="deleteTask()" type="button" data-bs-dismiss="modal" class="btn btn-danger">{{ __('Delete') }}</button>
+    <!-- delete Task Model-->
+    <div wire:ignore.self class="modal fade" id="deleteStudentModal" data-bs-backdrop="static"
+        data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteStudentModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteStudentModal">
+                        {{ __('Update a new task') }}
+                    </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ __('Are you sure wante to delete this task ? The delete will be permanently !') }}
+                </div>
+                <div class="modal-footer">
+                    <button wire:click="resetFields()"type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">{{ __('Cancel') }}</button>
+                    <button wire:click="deleteTask()" type="button" data-bs-dismiss="modal"
+                        class="btn btn-danger">{{ __('Delete') }}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script>
             window.addEventListener('close-modal', event => {
                 $('#addTaskModel').modal('hide');
                 $('#DeleteMsg').modal('hide');
+                $('#editTaskModal').modal('hide');
             });
 
             window.addEventListener('show-edit-task-modal', event => {
